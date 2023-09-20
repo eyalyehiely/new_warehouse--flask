@@ -1,5 +1,6 @@
 from flask import Flask,render_template,redirect,request,session,make_response,Response
 import pickle
+from items_db import items
 app = Flask(__name__)
 app.secret_key = 'fghdfghdfgh'
 
@@ -22,7 +23,7 @@ users = upload_users()
 @app.route('/')
 def home():
     for user in users:
-        if session['username'] == user['username']:
+        if session.get('username') == user['username']:
             # cookie_names.append(session.get('username'))
             return render_template('home.html',username = user['username'])
     return redirect('/login')
@@ -66,43 +67,48 @@ def register():
 
 #items
 #--------------------------------------------------------------------------------#
-# def save_items(table:list):
-#     with open('items.pickle','wb') as f:
-#         pickle.dump(table,f)
+def save_items(table:list):
+    with open('items.pickle','wb') as f:
+        pickle.dump(table,f)
         
 
-# def upload_items():
-#     with open('items.pickle','rb') as f:
-#         items_table = pickle.load(f)
-#     return items_table
+def upload_items():
+    with open('items.pickle','rb') as f:
+        items_table = pickle.load(f)
+    return items_table
 
 
 
-# items= upload_items()
+items= upload_items()
 
 
 
-# @app.route('/items',methods = ['GET','POST'])
-# def add_items():
-#     item_name = request.form.get('item_name')
-#     serial_number = request.form.get('serial_num')
-#     quantity = request.form.get('quantity')
-#     entrance_date = request.form.get('entrance_date')
-#     added_by = request.form.get('added_by')
-#     items.append(request.form)
-#     save_items(items)
-#     return render_template('items.html', item_name = item_name, serial_number = serial_number, quantity = quantity, entrance_date = entrance_date, added_by = added_by,items=items)
-
-
-
-
-
+@app.route('/items',methods = ['GET','POST'])
+def get_items():
+    item_name = request.form.get('item_name')
+    category = request.form.get('category')
+    serial_number = request.form.get('serial_num')
+    quantity = request.form.get('quantity')
+    # entrance_date = request.form.get('entrance_date')
+    # added_by = request.form.get('added_by')
+    items.append({'id':serial_number,'category':category,'quantity':quantity})
+    save_items(items)
+    return render_template('items.html',items=items)
 
 
 
 
 
 
+
+
+
+# def items_selsection():
+#     for item in items:
+#         if filter((lambda product: product['name']==request.form['name'], items)):
+#             quantity = int(input('how many items?'))
+#             item['quantity'] = item['quantity'] - quantity
+#             save_items(items)
 
 
 
@@ -127,7 +133,7 @@ def requests():
    for user in users:
         if session.get('username') == user['username']:
             # cookie_names.append(session.get('username'))
-            return render_template('requests.html',username = user['username'])
+            return render_template('requests.html',items_selsection(),username = user['username'])
         else:
             return redirect('/login')
 
@@ -141,4 +147,5 @@ def requests():
 def exit():
     cookie = Response.delete_cookie(session['username'])
     return render_template('login.html', make_response('logging out'))
+
 
