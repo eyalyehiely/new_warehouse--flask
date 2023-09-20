@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items</title>
+</head>
+<body>
+<style>
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+<div class="add_items">
+  <form action="/items" method="POST">
+      <div><input type="text" name="item_name" required autofocus placeholder="Item name"></div>
+      <div><input type="text" name="serial_num" required autofocus placeholder="Serial number"> </div>
+      <div><input type="number" name="quantity" required autofocus placeholder="Quantity"></div>
+     <div><input type="date" name="entrance_date" required autofocus placeholder="Entrance date"></div>
+     <div><input type="text" name="added_by" required autofocus placeholder="Added by"></div>
+      <div><input type="submit" value="Add!"></div>
+  </form>
+</div>
+
+<h1>The items element</h1>
+
+<table>
+  <tr>
+    <th>Item name</th>
+    <th>Serial number</th>
+    <th>Quantity</th>
+    <th>Entrance date</th>
+    <th>Added by</th>
+
+  </tr>
+  <tr>
+    
+      <td>{{item_name}}</td>
+      <td>{{serial_num}}</td>
+      <td>{{quantity}}</td>
+      <td>{{entrance_date}}</td>
+      <td>{{added_by}}</td>
+    
+  </tr>
+  <tr>
+    <!-- {% for item in items_table %}
+      <td>{{item_name}}</td>
+      <td>{{serial_num}}</td>
+      <td>{{quantity}}</td>
+      <td>{{entrance_date}}</td>
+      <td>{{added_by}}</td>
+    {% endfor %} -->
+  </tr>
+
+</table>
+
+
+</body>
+</html>
+
+</body>
+</html>
