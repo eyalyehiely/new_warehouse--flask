@@ -6,56 +6,32 @@
     <title>Items</title>
 </head>
 <body>
-<style>
-table, th, td {
-  border: 1px solid black;
-}
-</style>
+<h1>Items insert form</h1>
 <div class="add_items">
   <form action="/items" method="POST">
-      <div><input type="text" name="item_name" required autofocus placeholder="Item name"></div>
-      <div><input type="text" name="serial_num" required autofocus placeholder="Serial number"> </div>
-      <div><input type="text" name="category" required autofocus placeholder="Category"></div>
-      <div><input type="number" name="quantity" required autofocus placeholder="Quantity"></div>
-      <div><input type="submit" value="Add!"></div>
+    <div><input type="text" name="serial_num" required autofocus placeholder="Serial number"> </div>
+    <div>
+      <select name="category">
+        <option value="ropes">Ropes</option>
+        <option value="descenders">Descenders</option>
+        <option value="rope clamps">Rope clamps</option>
+        <option value="safety">Safety</option>
+        <option value="Metals">Metals</option>
+        <option value="textile">Textile</option>
+        <option value="tripods">Tripods</option>
+        <option value="stretcher">Stretcher</option>
+        <option value="specials">Specials</option>
+      </select>
+    </div>
+    <div><input type="text" name="item_name" required autofocus placeholder="Item name"></div>
+    <div><input type="number" name="quantity" required autofocus placeholder="Quantity"></div>
+    <div><input type="text" name="added_by" required autofocus placeholder="Added by"></div>
+    <div><p>Entrance date</p><input type="date" name="entrance_date" required autofocus placeholder="Entrance date"></div>
+    <div><p>Updating date</p><input type="date" name="updating_date" required autofocus placeholder="Updating date"></div>
+    <div><input type="submit" value="Add!"></div>
   </form>
 </div>
 
-<h1>The items element</h1>
-
-<table>
-  <tr>
-    <th>Item name</th>
-    <th>Serial number</th>
-    <th>Quantity</th>
-    <th>Entrance date</th>
-    <th>Added by</th>
-
-  </tr>
-  <tr>
-    
-      <td>{{item_name}}</td>
-      <td>{{serial_num}}</td>
-      <td>{{quantity}}</td>
-      <td>{{entrance_date}}</td>
-      <td>{{added_by}}</td>
-    
-  </tr>
-  <tr>
-    <!-- {% for item in items_table %}
-      <td>{{item_name}}</td>
-      <td>{{serial_num}}</td>
-      <td>{{quantity}}</td>
-      <td>{{entrance_date}}</td>
-      <td>{{added_by}}</td>
-    {% endfor %} -->
-  </tr>
-
-</table>
-
-
 </body>
-</html>
 
-</body>
 </html>
