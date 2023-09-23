@@ -1,41 +1,55 @@
+#general
+#-------------------------------------------------------------------------#  
 from flask import Flask,render_template,redirect,request,session,make_response,Response
-import pickle
-from items_db import items
+import pickle,sqlite3,datetime
 app = Flask(__name__)
 app.secret_key = 'fghdfghdfgh'
+  
+def query (sql):
+    with sqlite3.connect('users.db') as conn:
+        cur=conn.cursor()
+        rows = cur.execute(sql)
+        return list(rows)
 
-#users
-#-------------------------------------------------------------------------#
-def save_users(table:list):
-    with open('users.pickle','wb') as f:
-        pickle.dump(table,f)
-        
 
-def upload_users():
-    with open('users.pickle','rb') as f:
-        users_table = pickle.load(f)
-    return users_table
+def users_data():
+    rows = (query(f"SELECT * FROM users "))
+    table =[]
+    for row in rows:
+        table.append({'name':row[0],'username':row[1],'password':row[2],'email':row[3],'team':row[4]})
+    return table
+users_table = users_data()
 
-users = upload_users()
-# cookies = request.cookies
-# cookie_names = list(cookies.keys())
 
+
+
+def items_data():
+    rows = (query(f"SELECT * FROM items "))
+    table =[]
+    for row in rows:
+        table.append({'serial numner':row[0],'category':row[1],'item_name':row[2],'quantity':row[3],'added by':row[4],'entrance date':row[5],'updaating date':row[6]})
+    return table
+items_table = items_data()
+
+#Users - login-register-homepage
+#-------------------------------------------------------------------------#  
+#homepage
 @app.route('/')
 def home():
-    for user in users:
-        if session.get('username') == user['username']:
-            # cookie_names.append(session.get('username'))
-            return render_template('home.html',username = user['username'])
+    if session['username'] == None:
+        return redirect('/login')
+    
+    for user in users_table:
+        if session['username'] == user['username']:
+            return render_template('home.html',username = session['username'])
     return redirect('/login')
 
-
-
-
+#login
 @app.route('/login', methods = ["POST",'GET'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
-    for user in users:
+    for user in users_table:
         if ((request.form['username'] == user['username']) and (request.form['password'] == user['password'])):
             session['username'] = request.form['username'] 
             return redirect('/')
@@ -43,59 +57,38 @@ def login():
         
         
 
-
+#register
 @app.route('/register', methods = ["POST",'GET'])
 def register():
-    if users ==[]:
-        users.append(dict(request.form))
-        save_users(users)
+    if users_table ==[]:
+        query(f"INSERT INTO users VALUES('{request.form['name']}' ,'{request.form['username']}' , '{request.form['password']}' , '{request.form['phone']}' , '{request.form['email']}', '{request.form['team']}' )")
         session['username'] = request.form['username'] 
         return redirect('/')
 
     if request.method == 'GET':
         return render_template('register.html')
-    for user in users:
-        if request.form['username'] != user['username']:
-            users.append(dict(request.form))
-            save_users(users)
-            session['username'] = request.form['username'] 
-            return redirect('/')
-        else:
+    
+    for user in users_table:
+        if request.form['username'] == user['username']:
             return ("No valid user")
+    query(f"INSERT INTO users VALUES('{request.form['name']}' ,'{request.form['username']}' , '{request.form['password']}' , '{request.form['phone']}' , '{request.form['email']}', '{request.form['team']}' )")
+    session['username'] = request.form['username'] 
+    return redirect('/')
+    
     
      
 
 #items
 #--------------------------------------------------------------------------------#
-def save_items(table:list):
-    with open('items.pickle','wb') as f:
-        pickle.dump(table,f)
-        
-
-def upload_items():
-    with open('items.pickle','rb') as f:
-        items_table = pickle.load(f)
-    return items_table
-
-
-
-items= upload_items()
-
-
-
 @app.route('/items',methods = ['GET','POST'])
 def get_items():
-    item_name = request.form.get('item_name')
-    category = request.form.get('category')
-    serial_number = request.form.get('serial_num')
-    quantity = request.form.get('quantity')
-    # entrance_date = request.form.get('entrance_date')
-    # added_by = request.form.get('added_by')
-    items.append({'id':serial_number,'category':category,'quantity':quantity})
-    save_items(items)
-    return render_template('items.html',items=items)
+    for item in items_table:
+        if request.form['item_name'] == item['item_name']:
+            query(f"UPDATE items SET quantity='{str(request.form['quantity'])+str(item['quantity'])}'")
+            # updating date='{datetime.date.today()}
 
-
+    query(f"INSERT INTO items VALUES('{request.form.get('serial_num')}', '{request.form.get('category')}', '{request.form.get('item_name')}', '{request.form.get('quantity')}', '{request.form.get('added_by')}','{request.form.get('entrance_date')}','{request.form.get('updating_date')}')")
+    return render_template('items.html')
 
 
 
@@ -145,7 +138,7 @@ def requests():
 #----------------------------------------------------------------------------------#
 @app.route('/exit')
 def exit():
-    cookie = Response.delete_cookie(session['username'])
-    return render_template('login.html', make_response('logging out'))
+    session['username']= None
+    return redirect('/login')
 
 
